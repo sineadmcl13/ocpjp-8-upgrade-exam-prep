@@ -1,11 +1,13 @@
-public class MemberInnerClasses {
+public class MemberInnerClassExample {
 
+    private String privateStringAvailableToInner = "I can access this";
+    
     protected class Inner{
         public void runInnerClassMethod(){
             System.out.println("In the Inner Class Method");
+            System.out.println(privateStringAvailableToInner);
         }
     }
-    
     
     public void callInner(){
         Inner inner = new Inner();
@@ -13,7 +15,7 @@ public class MemberInnerClasses {
     }
     
     public static void main(String [] args){
-        MemberInnerClasses innerClassExample = new MemberInnerClasses();
+        MemberInnerClassExample innerClassExample = new MemberInnerClassExample();
         innerClassExample.callInner();
     }
 }

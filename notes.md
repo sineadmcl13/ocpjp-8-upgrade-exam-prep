@@ -4,7 +4,7 @@
 #### Exam objectives
 
 ##### Lambda Expressions
--    Describe and develop code that uses Java inner classes, including nested class, static class, local class, and anonymous classes
+-    [Describe and develop code that uses Java inner classes, including nested class, static class, local class, and anonymous classes](#describe-and-develop-code-that-uses-java-inner-classes-including-nested-class-static-class-local-class-and-anonymous-classes)
 -    Describe and write functional interfaces
 -    Describe a lambda expression; refactor the code that uses an anonymous inner class to use a lambda expression; describe type inference and target typing
 
@@ -65,12 +65,47 @@ There are four of types of nested classes:
 ###### Member Inner Classes
 Member inner classes have the following properties:
 
-- Can be declared public, private, or protected or use default access Can extend any class and implement interfaces
+- Can be declared public, private, or protected or use default access 
+- Can extend any class and implement interfaces
 - Can be abstract or final
 - Cannot declare static fields or methods
 - Can access members of the outer class including private members
 
-[Code example found here](code-examples/MemberInnerClasses.java)
+[Code example found here](code-examples/lambda-expressions/MemberInnerClassExample.java)
+
+###### Local Inner Classes
+A local inner class is a nested class defined within a method
+- They do not have an access specifier.
+- They cannot be declared static and cannot declare static fields or methods.
+- They have access to all fields and methods of the enclosing class.
+- They do not have access to local variables of a method unless those variables are final or effectively final. 
+
+(If the code can still compile with the keyword final inserted before a local variable, the variable is effectively final)
+
+[Code example found here](code-examples/lambda-expressions/LocalInnerClassExample.java)
+
+
+###### Anonymous Inner Classes
+
+An anonymous inner class is a local inner class that is declared and instantiated all in one statement using the new keyword
+
+- They are required to extend an existing class or implement an existing interface
+- Remeber that if assigned to a local variable it must end with semicolons, just like other Java statements
+- You can't implement both an interface and extend a class unless it is java.lang.Object
+
+[Code example found here](code-examples/lambda-expressions/AnonmousInnerClassExample.java)
+
+###### Static Nested Classes
+
+A static nested class is a static class defined at the member level
+
+It is like a regular class except for the following:
+- The nesting creates a namespace because the enclosing class name must be used to refer to it.
+- It can be made private or use one of the other access modifiers to encapsulate it. 
+- The enclosing class can refer to the fields and methods of the static nested class.
+
+[Code example found here](code-examples/lambda-expressions/StaticNestedClassExample.java)
+
 
 ----
 #### References
