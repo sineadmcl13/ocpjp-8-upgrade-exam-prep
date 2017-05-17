@@ -1,12 +1,12 @@
-### 1ZO-810 Upgrade Java SE 7 to Java SE 8 OCP Programmer
+## 1ZO-810 Upgrade Java SE 7 to Java SE 8 OCP Programmer
 
 ----
 #### Exam objectives
 
 ##### Lambda Expressions
 -    [Describe and develop code that uses Java inner classes, including nested class, static class, local class, and anonymous classes](#describe-and-develop-code-that-uses-java-inner-classes-including-nested-class-static-class-local-class-and-anonymous-classes)
--    Describe and write functional interfaces
--    Describe a lambda expression; refactor the code that uses an anonymous inner class to use a lambda expression; describe type inference and target typing
+-    [Describe and write functional interfaces](#describe-and-write-functional-interfaces)
+-    [Describe a lambda expression; refactor the code that uses an anonymous inner class to use a lambda expression; describe type inference and target typing](#describe-a-lambda-expression)
 
 ##### Using Built-in Lambda Types
 -    Describe the interfaces of the java.util.function package
@@ -52,6 +52,7 @@
 -    Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit
 
 ----
+### Lambda Expressions
 
 #### Describe and develop code that uses Java inner classes, including nested class, static class, local class, and anonymous classes
 
@@ -62,7 +63,7 @@ There are four of types of nested classes:
 - An anonymous inner class is a local inner class that does not have a name.
 - A static nested class is a static class that is defined at the same level as static variables.
 
-###### Member Inner Classes
+##### Member Inner Classes
 Member inner classes have the following properties:
 
 - Can be declared public, private, or protected or use default access 
@@ -73,7 +74,7 @@ Member inner classes have the following properties:
 
 [Code example found here](code-examples/lambda-expressions/MemberInnerClassExample.java)
 
-###### Local Inner Classes
+##### Local Inner Classes
 A local inner class is a nested class defined within a method
 - They do not have an access specifier.
 - They cannot be declared static and cannot declare static fields or methods.
@@ -85,7 +86,7 @@ A local inner class is a nested class defined within a method
 [Code example found here](code-examples/lambda-expressions/LocalInnerClassExample.java)
 
 
-###### Anonymous Inner Classes
+##### Anonymous Inner Classes
 
 An anonymous inner class is a local inner class that is declared and instantiated all in one statement using the new keyword
 
@@ -95,7 +96,7 @@ An anonymous inner class is a local inner class that is declared and instantiate
 
 [Code example found here](code-examples/lambda-expressions/AnonmousInnerClassExample.java)
 
-###### Static Nested Classes
+##### Static Nested Classes
 
 A static nested class is a static class defined at the member level
 
@@ -107,9 +108,80 @@ It is like a regular class except for the following:
 [Code example found here](code-examples/lambda-expressions/StaticNestedClassExample.java)
 
 
+### Describe and write functional interfaces
+
+##### Defining a Functional Interface
+Java defines a functional interface as an interface that contains a single abstract method
+They are the basis for lambda expressions in functional programming.
+
+[Code example found here](code-examples/lambda-expressions/FunctionalInterfaceDemo.java)
+
+
+### Describe a lambda expression 
+
+A lambda expression consists of the following: 
+
+- A comma-separated list of formal parameters enclosed in parentheses
+
+```java
+p -> p.getAge() >= 18
+(Pet p) -> p.getAge() >= 18
+(p) -> p.getAge() >= 18
+
+```
+
+- The arrow token ->
+-  A body, which consists of a single expression or a statement block.
+
+```java
+p -> p.getAge() >= 18
+p -> { p.getAge() >= 18 }
+p -> { return p.getAge() }
+
+```
+
+A return statement is NOT an expression; in a lambda expression, you MUST enclose statements in braces ({...}). However, you do not have to enclose a void method invocation in braces. For example, the following is a valid lambda expression: 
+
+```java
+name -> System.out.println(name)
+```
+ 
+#### Refactor the code that uses an anonymous inner class to use a lambda expression
+
+The following lines of code demonstrate a typical anonymous inner class implementation for a button action implementation
+
+```java
+JButton button = ...
+JLabel comp = ...
+
+button.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        comp.setText("Button has been clicked");
+    }
+});
+```
+
+
+In Java 8, we would write this code example as a lambda expression, as shown in example below: 
+
+```java
+JButton button = ...
+JLabel comp = ...
+
+button.addActionListener(e -> comp.setText("Button has been clicked"));
+```
+
+#### Describe type inference and target typing
+
+In the examples above we have not declared the type of the variable being passed. THe Java compiler is inferring the type of the variable from its context.
+
+It means that you do not need to explicitly write out the type when it is obvious. 
+In some situations where the Java compiler cannot infer types, you MUST explicitly specify values for type variables with type witnesses.
+
 ----
-#### References
+### References
 
 - Education.oracle.com. (2017). Upgrade Java SE 7 to Java SE 8 OCP Programmer | Oracle Certification Exam. [online] Available at: [https://education.oracle.com](https://education.oracle.com/pls/web_prod-plq-dad/db_pages.getpage?page_id=5001&get_params=p_exam_id:1Z0-810) [Accessed 15 May 2017].
 
-
+- Ganesh, S., Kiran, H. and Sharma, T. (2016). Oracle Certified Professional Java SE 8 programmer exam 1Z0-809. 1st ed.
