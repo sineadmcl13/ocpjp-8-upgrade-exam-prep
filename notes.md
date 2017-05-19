@@ -15,8 +15,8 @@
 -    [Develop code that uses the Supplier interface](#develop-code-that-uses-the-supplier-interface)
 -    [Develop code that uses the UnaryOperator interface](#develop-code-that-uses-the-unaryOperator-interface)
 -    [Develop code that uses the Predicate interface](#develop-code-that-uses-the-predicate-interface)
--    [Develop code that uses the primitive and binary variations of the base interfaces of the java.util.function package](#develop-code-that-uses-the-primitive-and-binary-variations-of-the-base-interfaces-of-the-java.util.function package)
--    [Develop code that uses a method reference, including refactoring a lambda expression to a method reference](#develop-code-that-uses-a-method-reference,-including-refactoring-a-lambda-expression-to-a-method-reference)
+-    [Develop code that uses the primitive and binary variations of the base interfaces of the java.util.function package](#develop-code-that-uses-the-primitive-and-binary-variations-of-the-base-interfaces-of-the-javautilfunction-package)
+-    [Develop code that uses a method reference, including refactoring a lambda expression to a method reference](#develop-code-that-uses-a-method-reference-including-refactoring-a-lambda-expression-to-a-method-reference)
 
 ##### Java Collections and Streams with Lambdas
 -    Develop code that iterates a collection by using the forEach() method and method chaining
