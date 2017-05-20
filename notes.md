@@ -19,10 +19,10 @@
 -    [Develop code that uses a method reference, including refactoring a lambda expression to a method reference](#develop-code-that-uses-a-method-reference-including-refactoring-a-lambda-expression-to-a-method-reference)
 
 ##### Java Collections and Streams with Lambdas
--    Develop code that iterates a collection by using the forEach() method and method chaining
--    Describe the Stream interface and pipelines
--    Filter a collection by using lambda expressions
--    Identify the operations, on stream, that are lazy
+-    [Develop code that iterates a collection by using the forEach() method and method chaining](#develop-code-that-iterates-a-collection-by-using-the-forEach-method-and-method-chaining)
+-    [Describe the Stream interface and pipelines](#describe-the-sstream-interface-and-pipelines)
+-    [Filter a collection by using lambda expressions](#filter-a-collection-by-using-lambda-expressions)
+-    [Identify the operations, on stream, that are lazy](#identify-the-operations-on-stream-that-are-lazy)
 
 ##### Collection Operations with Lambda
 -    Develop code to extract data from an object by using the map() method
@@ -441,6 +441,224 @@ Refactoring Example
     System.out.println(f2.apply(new char[] {'P', 'Q', 'R'}))
 ```
 
+---- 
+
+### Java Collections and Streams with Lambdas
+
+#### Develop code that iterates a collection by using the forEach() method and method chaining
+
+There are multiple way of looping through a collection. You could use an iterator, the enhanced for loop or a number of other approaches. With Java 8 you can now use a lambda.
+
+```java
+    List<String> names = Arrays.asList("Mike, "Dave", "John");
+    for(String name : names){
+        System.out.println(name);
+    }
+```
+
+With lambdas you can use the forEach() method
+```java
+    names.forEach(n -> System.out.println(n));
+```
+
+#### Describe the Stream interface and pipelines
+A stream is a sequence of data. A stream pipelins is the operations that run on a stream to produce a result
+
+`Stream` does not store data, it operates on the source data structure (Collection or array) and produces pipelined data that we can use and perform specific operations. For example, we can create a Stream from a `java.util.List` and filter it based on a condition as shown below.
+
+```java
+    List<String> names = Arrays.asList("Mike", "John", "Dave", "Peter");
+    names.stream()
+        .filter(n -> n.length() == 4)
+        .map(String::toUpperCase)
+        .forEach(n -> System.out.println(n));
+```
+
+Stream API operations that returns a new `java.util.stream.Stream` are called **intermediate operations**. 
+
+Most of the times, these operations are lazy in nature, computation on the source data is only performed when the terminal operation is initiated, and source elements are consumed only as needed. 
+
+##### Intermediate Operations
+Intermediate operations are never the final result producing operations. Commonly used intermediate operations are filter and map. 
+
+- **Stream.filter**
+
+```java
+    Stream<T> filter(Predicate<? super T> predicate);
+```
+
+```java
+    stream.filter(s -> s.equals("Hello World));
+```
+
+- **Stream.map()**
+```java
+    <R> Stream<R> map(Function<? super T, ? extends R> mapper);
+```
+in other words, for each item, create a new object based on that item. example below
+
+```java
+    stream.map(s -> s.toUpperCase());
+```
+
+- **Stream.distinct()**
+```java
+    Stream<T> distinct();
+```
+
+```java
+    List<String> list = Arrays.asList("a", "aa", "a", "b", "b");
+    long l = list.stream().distinct().count();
+    System.out.println(l);
+```
+
+- **Stream.peak()**
+
+Returns a `Stream` itself after applying the action passed as a `consumer` 
+```java
+    Stream<T> peak(Consumer<? super T> action)
+```
+
+```java
+    Stream<String> names = Stream.of("John", "Mike", "Dean", "Paul");
+    List<String> list = names
+        .peek(n -> System.out.println(n))
+        .map(n -> n.toUpperCase())
+        .collect(Collectors.toList());
+    
+    list.forEach(n -> System.out.println(n));
+    
+```
+
+##### Terminal Operations
+Stream API operations that returns a result or produce a side effect. Once the terminal method is called on a stream, it consumes the stream and after that we can not use it
+
+- **Stream.collect()**
+Used to transform the elemnts of the stream into a different kind of result
+
+```java
+    <R, A> R collect(Collector<? super T, A, R> collector);
+```
+
+
+```java
+    List<String> names = Arrays.asList("John", "Mike", "Mark", "Paul");
+    List<String> filtered = names.stream()
+        .filter(n -> n.startsWith("M"))
+        .collect(Collectors.toList());
+    
+    filtered.forEach(n -> System.out.println(n));
+```
+
+- **Stream.min() / Stream.max()**
+
+```java
+    Optional<T> min(Comparator<? super T> comparator);
+    Optional<T> max(Comparator<? super T> comparator);
+```
+
+`Stream.min()` and `Stream.max()` both return an `Optional` instance with has a `get()` method, which you can use to obtain the value. 
+
+Both methods also take a `Comparator` as a parameter. THe `Comparator.comparing()` method creates a `Comparator` based on the lambda expression passed to it. 
+
+
+```java
+    Comparator<Person> byLastName = Comparator.comparing(Person::getLastName);
+```
+
+
+- **Stream.findAny()**
+
+The `findAny` method immediatley stops pipeline execution, so no further elements will be processed
+
+```java
+    List<String> names = Arrays.asList("Mark", "Mike", "Paul", "Peter");
+    Optional<String> result = names.stream()
+                             .filter(n -> n.startsWith("M"))
+                             .findAny();
+     System.out.println(result.get());
+```
+
+
+- **Stream.findFirst()**
+
+Provides the firstm elements from the stream. Also returns an `Optional`
+
+```java
+    Optional<T> findFirst();
+```
+
+- **Stream.count()**
+
+Returns the number of elements in the stream after filtering has been applied
+
+```java
+    long count();
+```
+
+```java
+    List<String> names = Arrays.asList("Peter", "Paul", "Pat", "Dave");
+    
+    long l = names.stream()
+        .filter(n -> n.startsWith("P"))
+        .count();
+    System.out.println(l);
+    
+```
+
+##### Pipelines
+
+A stream pipeline consists of 
+ - a source. e.g a `Collection` 
+ - zero or more intermediate operations. These transform the `Stream` into another `Stream` e.g `filter(Predicate p)`
+ - a terminal operation which produces a side-efect. eg. `count()` or `forEach(Consumer c)`
+ 
+ 
+#### Filter a collection by using lambda expressions
+
+The `Stream.filter()` method is an intermediate operation. You can filter a `Stream` with more than one condition by chaining `filter()` methods
+
+```java
+    List<String> names = Arrays.asList("Mark", "Matthew", "Mike", "Paul", "Peter");
+    
+    names.stream()
+        .filter(n -> n.startsWith("M"))
+        .filter(n -> n.length() == 4)
+        .forEach(n -> System.out.println(n));
+            
+```
+
+#### Identify the operations, on stream, that are lazy
+
+Streams have two types of methods: **intermediate** and **terminal**, which work together. They can be calledd "lazy" due to the way we chain multiple intermediate operations followed by a terminal operation. 
+
+Calls to intermediate methods e.g `filter()` return immediatley and the lambda expressions provided to them are not evaluated right away. Their behaviour is cached for later execution.
+
+The cached behaviour if intermediate operations is run when one of the terminal operations, like `findFirst()` is called. Not all the cached code is executed and computation will complete as soon as the desired result is found
+
+```java
+    List<String> names = Arrays.asList("Peter", "Paul", "Simon", "Mike", "Dave");
+    String name = names.stream()
+        .filter(s -> {
+            System.out.println("filtering " + s);
+            return s.length() == 4;
+        })
+        .map(s -> {
+            System.out.println("uppercasing " + s);
+            return s.toUpperCase();
+        })
+        .findFirst()
+        .get();
+    System.out.println(name);
+```
+
+The output will be 
+```java
+    filtering Peter
+    filtering Paul
+    uppercasing Paul
+    PAUL
+``` 
 
 ----
 ### References
