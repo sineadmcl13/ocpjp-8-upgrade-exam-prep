@@ -19,27 +19,27 @@
 -    [Develop code that uses a method reference, including refactoring a lambda expression to a method reference](#develop-code-that-uses-a-method-reference-including-refactoring-a-lambda-expression-to-a-method-reference)
 
 ##### Java Collections and Streams with Lambdas
--    [Develop code that iterates a collection by using the forEach() method and method chaining](#develop-code-that-iterates-a-collection-by-using-the-forEach-method-and-method-chaining)
--    [Describe the Stream interface and pipelines](#describe-the-sstream-interface-and-pipelines)
+-    [Develop code that iterates a collection by using the forEach() method and method chaining](#develop-code-that-iterates-a-collection-by-using-the-foreach-method-and-method-chaining)
+-    [Describe the Stream interface and pipelines](#describe-the-stream-interface-and-pipelines)
 -    [Filter a collection by using lambda expressions](#filter-a-collection-by-using-lambda-expressions)
 -    [Identify the operations, on stream, that are lazy](#identify-the-operations-on-stream-that-are-lazy)
 
 ##### Collection Operations with Lambda
--    Develop code to extract data from an object by using the map() method
--    Search for data by using methods such as findFirst(), findAny(), anyMatch(), allMatch(), and noneMatch()
--    Describe the unique characteristics of the Optional class
--    Perform calculations by using Java Stream methods, such as count(), max(), min(), average(), and sum()
--    Sort a collection by using lambda expressions
--    Develop code that uses the Stream.collect() method and Collectors class methods, such as averagingDouble(), groupingBy(), joining(), and partitioningBy()
+-    [Develop code to extract data from an object by using the map() method](#develop-code-to-extract-data-from-an-object-by-using-the-map-method)
+-    [Search for data by using methods such as findFirst(), findAny(), anyMatch(), allMatch(), and noneMatch()](#search-for-data-by-using-methods-such-as-findfirst-findany-anymatch-allmatch-and-nonematch)
+-    [Describe the unique characteristics of the Optional class](#describe-the-unique-characteristics-of-the-optional-class)
+-    [Perform calculations by using Java Stream methods, such as count(), max(), min(), average(), and sum()](#perform-calculations-by-using-java-stream-methods-such-as-count-max-min-average-and-sum)
+-    [Sort a collection by using lambda expressions](#sort-a-collection-by-using-lambda-expressions)
+-    [Develop code that uses the Stream.collect() method and Collectors class methods, such as averagingDouble(), groupingBy(), joining(), and partitioningBy()](#develop-code-that-uses-the-streamcollect-method-and-collectors-class-methods-such-as-averagingdouble-groupingBy-joining-and-partitioningBy)
 
 ##### Parallel Streams
--    Develop code that uses parallel streams
--    Implement decomposition and reduction in streams
+-    [Develop code that uses parallel streams](#develop-code-that-uses-parallel-streams)
+-    [Implement decomposition and reduction in streams](#implement-decomposition-and-reduction-in-streams)
 
 ##### Lambda Cookbook
--    Develop code that uses Java SE 8 collection improvements, including Collection.removeIf(), List.replaceAll(), Map.computeIfAbsent(), and Map.computeIfPresent() methods
--    Develop code that uses Java SE 8 I/O improvements, including Files.find(), Files.walk(), and lines() methods
--    Use flatMap() methods in the Stream API
+-    [Develop code that uses Java SE 8 collection improvements, including Collection.removeIf(), List.replaceAll(), Map.computeIfAbsent(), and Map.computeIfPresent() methods](#develop-code-that-uses-java-se-8-collection-improvements-including-collectionremoveif-listreplaceall-mapcomputeifabsent-and-mapcomputeifpresent-methods)
+-    [Develop code that uses Java SE 8 I/O improvements, including Files.find(), Files.walk(), and lines() methods](#develop-code-that-uses-java-se-8-io-improvements-including-filesfind-fileswalk-and-lines-methods)
+-    [Use flatMap() methods in the Stream API](#use-flatmap-methods-in-the-stream-api)
 -    Develop code that creates a stream by using the Arrays.stream() and IntStream.range() methods
 
 ##### Method Enhancements
@@ -661,6 +661,514 @@ The output will be
 ``` 
 
 ----
+
+### Collection Operations with Lambda
+
+#### Develop code to extract data from an object by using the map() method
+
+Streams support the method `map()` which take a `Function` as an argument and returns a `Stream`
+
+```java
+    <R> Stream<R> map(Function<? super T, ? extends R> mapper);
+```
+
+```java
+    Stream<String> stream = Stream.of("Mark", "Luke", "Paul", "Dave");
+    Stream<String> upperCase = stream.map(s -> s.toUpperCase());
+    upperCase.forEach(s -> System.out.println(s));   
+```
+
+`map()` can also be chained
+
+```java
+    Stream<String> stream = Stream.of("Mark", "Luke", "Paul", "Dave");
+    Stream<String> upperCase = stream
+            .map(s -> s.substring(0,1))
+            .map(s -> s.toLowerCase());
+    upperCase.forEach(s -> System.out.println(s));
+```
+
+##### Primitive stream specialisations
+The most common methods used to convert a stream to a primitive specialised version are `Stream.mapToInt()`, `Stream.mapToDouble` and `Stream.mapToLong`. There methods work exactly like the method `Stream.map()` but return a specialised stream
+
+```java
+    Stream<String> names = 
+                        Stream.of("Mark", "Matthew", "John", "Peter");
+    
+    IntStream lengths = names.mapToInt(n -> n.length());
+    lengths.forEach(n -> System.out.println(n));
+
+```
+
+#### Search for data by using methods such as findFirst(), findAny(), anyMatch(), allMatch(), and noneMatch()
+
+- **findFirst()**
+
+Returns the first element of the stream unless the stream is empty. If the stream is empty, it retursn an empty `Optional`
+
+```java
+    Option<T> findFirst();
+```
+
+```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+    Optional<Integer> results = 
+                numbers.stream().filter(i -> i% 3 == 0).findFirst();
+
+    System.out.println(results.get());
+```
+
+- **findAny()**
+
+Returns an arbritary element of the stream unless the stream is empty. If the stream is empty, it retursn an empty `Optional`
+
+```java
+    Optional<T> findAny();
+```
+
+```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+    Optional<Integer> results = 
+                numbers.stream().filter(i -> i% 3 == 0).findAny();
+
+    System.out.println(results.get());
+```
+
+The behavior of `findAny()` operation is explicitly nondeterministic; it is free to select any element in the stream. This is to allow for maximal performance in parallel operations
+
+
+- **anyMatch()**
+
+The `anyMatch()` method searches a stream and returns information about how the stream pertains to the predicate.
+
+```java
+    boolean anyMatch(Preciate<? super T> predicate);
+```
+
+```java
+    Stream<String> names = Stream.of("Mike", "Mark", "Peter", "Dave");
+    boolean nameWith5Chars = names.anyMatch(n -> n.length() == 5);
+    System.out.println(nameWith5Chars);
+    
+```
+
+- **allMatch()**
+
+Works in the same way as `anyMatch()` but will check if all the elements in the stream match the given `Predicate`
+
+```java
+    boolean allMatch(Predicate<? super T> predicate);
+```
+
+```java
+    Stream<String> names = Stream.of("Mike", "Mark", "Peter", "Dave");
+    boolean allWith4Chars = names.allMatch(n -> n.length() == 4);
+    System.out.println(allWith4Chars);
+```
+
+- **noneMatch()**
+
+Works in the same way as `allMatch()` but ensures that none of the elements in the stream match the `Predicate`
+
+```java
+    boolean noneMatch(Predicate<? super T> predicate);
+```
+
+```java
+    Stream<String> names = Stream.of("Mike", "Mark", "Peter", "Dave");
+    boolean none6CharsLong = names.noneMatch(n -> n.length() == 6);
+    System.out.println(none6CharsLong);
+```
+
+*All findXxx() methods have no arguments and return `Optional`*
+
+*All xxxMatch() methods accept a `Predicate` and return a `boolean` primitive*
+
+
+#### Describe the unique characteristics of the Optional class
+
+A `java.util.Optional` object is a wrapper for an `Object` of type `T` or a wrapper for no object. It is intended as a safer alternative than a reference of type `T` that refers to an `Object` or `null`
+
+There are several ways to create optional objects. 
+
+- Empty Optional
+
+```java
+    Optional<String> str = Optional.empty();
+```
+
+- Optional from a non-null value
+```java
+    String str = "Giraffes";
+    Optional<Srting> optStr = Optional.of(str);
+```
+
+- Optional from null
+
+```java
+    String str = null;
+    Optional<String> = Optional.ofNullable(str);
+    
+    //in this example the resulting Optional object would be empty
+```
+
+**Unwrapping an `Optional`**
+
+- **`Optional.get()` **
+    
+    It returns the wrapped value if present but throws a `NoSuchElementException` otherwise
+    
+- **`Optional.orElse(T other)`**
+
+    Allows you to prvode a default value for when the optional does not contain a value
+    
+    
+- `Optional.orElseGet(Supplier<? extends T> other)`
+
+    The `Supplier` is invoked only if the optional contains no value. 
+    
+- **`Optional.orElseThrow(Supplier<? extends X> exceptionSupplier)`**
+
+    similar to `get()` in that it throws an exception when empty, but in this case you can choose the type of exception to throw
+    
+- **`Optional.ifPresent()`**
+
+    Returns true is the `Optional` contains a value, `false` otherwise
+    
+#### Perform calculations by using Java Stream methods, such as count(), max(), min(), average(), and sum()
+
+- **`count()`**
+
+Determines to number of elements in a finite stream. 
+
+```java
+    long count()
+```
+
+```java
+    Stream<String> s = Stream.of("John", "James", "Joe");
+    System.out.println(s.count());
+```
+
+- **`min()` and `max()` **
+
+Allows you to pass a custom comparator and find the smallest and largest value of a finite stream according to that sort order
+
+```java
+    Optional<T> min(<? super T> comparator)
+    Optional<T> max(? super T> comparator);
+```
+
+```java
+    Stream<String> s = Stream.of("John", "James", "Joe");
+    Optional<String> min = s.min((s1, s2) -> s1.length() - s2.length());
+    min.ifPresent(System.out::println);
+    
+    Optional<String> max = s.max((s1, s2) -> s1.length() - s2.length());
+    max.ifPresent(System.out::println);
+```
+
+- **`average()` and `sum()`**
+
+The stream library has specialized types IntStream, LongStream, and DoubleStream that store primitive values directly, without using wrappers.
+The `sum()` and `average()` methods are defined for these and not defined for `Stream`
+
+```java
+    IntStream stream = IntStream.of(2, 4, 6, 1, 34, 5, 9);
+    double average = stream.average().getAsDouble();
+    int sum = stream.sum();
+```
+
+#### Sort a collection by using lambda expressions
+
+Java streams API has several sorting methods. 
+
+- **`sorted()`**
+
+Returns a stream with the elements sorted. Java uses natural ordering unless we specify a comparator
+
+```java
+    Stream<T> sorted()
+    Stream<T> sorted(Comparator<? superT> comparator)
+```
+
+
+```java
+    Stream<String> names = Stream.of("Bill", "Conor", "Andy");
+    names.sorted().forEach(System.out::println);
+```
+```java
+    Stream<String> reverse = Stream.of("Bill", "Conor", "Andy");
+    reverse.sorted(Comparator.reverseOrder()).forEach(System.out::println);    
+```
+
+- **`comparing(...)`**
+
+The `comparing(...)` method has been added to the `Comparator` interface. It can be used to provide custom sorting logic 
+
+```java
+    Stream<String> names = Stream.of("Aaron", "Conor", "Bill");
+    
+    Comparator<String> c1 = Comparator.comparing(n -> n.length());
+    names.sorted(c1).forEach(System.out::println);
+    
+```
+
+- **`Comparator.thenComparing(...)`**
+
+This is a default method of `Comparator` interface introduced in Java 8. Allows you do a sorting by composite condition 
+
+```java
+    Stream<String> names = Stream.of("Aaron", "Andy", "Barney", "Bill");
+    
+    Comparator<String> c1 = Comparator.comparing(n -> n.length());
+    Comparator<String> c2 = (n1, n2) -> n1.compareTo(n2);
+    
+    names.sorted(c1.thenComparing(c2))
+         .forEach(System.out::println);
+    
+```
+
+#### Develop code that uses the Stream.collect() method and Collectors class methods, such as averagingDouble(), groupingBy(), joining(), and partitioningBy()
+
+
+The `Stream.collect(...)` method allows you to collect the results of an action on the stream together. This method takes 3 arguments
+
+- A supplier to make new instances of the target object, eg. a constructor for an set
+- An accumulator that adds an element to the target e.g an `add` method
+- A combiner that merges 2 objects into 1, such as `addAll`
+
+The `Collector` interface is a convenient interface with factory methods for common collectors 
+
+e.g
+```java
+    List<String> result = stream.collect(Collectors.toList());
+```
+
+- **`Collectors.averagingDouble(ToDoubleFunction<? super T> mapper)`**
+
+Calculates the average of stream elements as `double` data type. It returns the `Collector` interface
+
+```java
+    List<String> list = Arrays.asList("A", "AA", "A", "AAA");
+    double result = 
+        list.stream()
+        .collect(Collectors.averagingDouble(s -> s.length()));
+    System.out.println(result);
+```
+
+- **`Collectors.groupingBy(Function<? super T, ? extends K> classifier)`**
+
+Groups elements according to the `Function` provided as returns the results in a `map`
+
+```java
+    List<String> list = Arrays.asList("A", "AA", "A", "AAA");
+    Map<Integer, List<String>> result = 
+        list.stream().collect(Collectors.groupingBy(String::length));
+    System.out.println(result);
+```
+
+- **`Collectors.joining()`**
+
+This concatenates all elements in a stream into a single string by invoking the `toString()` method on each object in the stream.
+
+```java
+    Stream<String> names = Stream.of("James", "John", "Joe");
+    String concat = names.collect(Collectors.joining());
+    System.out.println(concat);
+    // JamesJohnJoe
+```
+
+```java
+    Stream<String> names = Stream.of("James", "John", "Joe");
+    String concat = names.collect(Collectors.joining(", "));
+    System.out.println(concat);
+    // James, John, Joe
+```
+
+- **`Collectors.partiitioningBy(Predicate<? super T> predicate)`**
+
+As `partitioingBy(..)` takes a `Predicate` there are only possible groups; true and false. 
+
+```java
+    Stream<String> names = Stream.of("John", "Joe", "James");
+    Map<Boolean, List<String>> map = names.collect(
+        Collectors.partitioningBy(s -> s.length() <= 4));
+    System.out.println(map);
+    //{false=[James], true=[John, Joe]}
+```
+
+----
+
+### Parallel Streams
+
+#### Develop code that uses parallel streams
+
+Streams can be sequential or parallel.
+
+Sequential example
+```java
+    List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+    nums.stream().forEach(System.out::print);
+    //1234
+```
+
+Parallel example
+
+```java
+    List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+    nums.stream().parallel().forEach(System.out::print);
+    //3421 - can change every time its ran 
+```
+
+#### Implement decomposition and reduction in streams
+
+The `reduce(...)` method of the `Stream` interface performs a reduction operation on the stream to reduce it to a single value
+
+```java
+    reduce(T identity, BinaryOperator<T> accumulator);
+```
+
+```java
+    List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+    Integer sum = nums.stream().reduce(0, (n1, n2) -> n1 + n2);
+    System.out.println(sum);
+```
+
+----
+
+### Lambda Cookbook
+
+#### Develop code that uses Java SE 8 collection improvements, including Collection.removeIf(), List.replaceAll(), Map.computeIfAbsent(), and Map.computeIfPresent() methods
+
+
+- **`Colection.removeIf()`**
+
+Java 8 introduced a new method called `removeIf` that allows you remove elements from a collection using a `Predicate`
+
+```java
+    boolean removeIf(Predicate<? super E> filter);
+```
+
+```java
+   List<String> list = new ArrayList<>();
+   list.add("Magician");
+   list.add("Assistant");
+   System.out.println(list); // [Magician, Assistant]
+   list.removeIf(s -> s.startsWith("A"));
+   System.out.println(list); // [Magician]
+```
+
+- **`List.replaceAll()`**
+
+Allows you to pass a lambda expression and have it applied to each element in the list. The result replaces that element in the list
+
+```java
+    void replaceAll(UnaryOperator<E> o)
+```
+
+```java
+    List<Integer> nums = Arrays.asList(1, 2, 3);
+    nums.replaceAll(n -> n * 2);
+    nums.forEach(System.out::println);
+```
+
+- **`Map.computeIfAbsent`**
+
+This takes a `BiFunction` which is called when the requested key is found
+
+```java
+    V computeIfPresent(K key, BiFunction<? super K, ? extends V> function)
+```
+
+```java
+    Map<String, Integer> counts = new HashMap<>();
+    counts.put("Tom", 1);
+    
+    BiFunction<String, Integer, Integer> mapper = (k, v) -> v + 1;
+    Integer tomCount = counts.computeIfPresent("Tom", mapper);
+    System.out.println(tomCount);
+    
+```
+
+- **`Map.computeIfAbsent()`**
+
+Takes a `Function` which is called when the requested key is not found
+
+```java
+    V computeIfAbsent(K key, Function<? super K, ? extends V> function)
+```
+
+
+```java
+    Map<String, Integer> counts = new HashMap<>();
+    counts.put("Tom", 1);
+    
+    Function<String, Integer> mapper = (k) -> 1;
+    Integer simonCount = counts.computeIfAbsent("Simon", mapper);
+    System.out.println(simonCount);
+```
+
+#### Develop code that uses Java SE 8 I/O improvements, including Files.find(), Files.walk(), and lines() methods
+
+- **`Files.find(...)`**
+
+Returns a `Stream` that is lazily populated with `Path` by searching for files in a file tree rooted at a given starting file
+
+```java
+    public static Stream<path> find(Path start,
+                        int maxDepth,
+                        BiPredicate<Path, BasicFileAttributes> matcher,
+                        FileVisitOption... options) 
+                        throws IOException
+```
+
+[Code example found here](code-examples/lambda-cookbook/FilesFindExample.java)
+
+- **`Files.walk(...)`**
+
+Returns a `Stream` that is lazily populated with `Path` by walkign the file tree rooted at a given starting file. The file tree is traversed depth-first, the elements in the stream are `Path` objects that are obtained as if by resolving the relative path against start.
+
+```java
+    public static Stream<Path> walk(Path start,
+                                    int maxDepth,
+                                    FileVisitOption... options)
+                                    throws IOException
+```
+
+[Code example found here](code-examples/lambda-cookbook/FilesWalkExample.java)
+
+
+- **`lines()`**
+
+Reads all the lines from a file as a `Stream`. Bytes from the file are decoded into characters using the UTF-8 charset
+
+```java
+    public static Stream<String> lines(Path path) throws IOException
+```
+
+[Code example found here](code-examples/lambda-cookbook/FileLinesExample.java)
+
+#### Use flatMap() methods in the Stream API
+
+Returns a stream consisting of the results of applying the provided mapping function to each element 
+
+```java
+    <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper)
+```
+
+```java
+    List<String> names1 = Arrays.asList("John", "Joe");
+    List<String> names2 = Arrays.asList("Dave");
+    
+    Stream<List<String>> allNames = Stream.of(names1, names2);
+    
+    allNames.flatMap(n -> n.stream()).forEach(System.out::println);
+```
+
+
+
+----
 ### References
 
 - Education.oracle.com. (2017). Upgrade Java SE 7 to Java SE 8 OCP Programmer | Oracle Certification Exam. [online] Available at: [https://education.oracle.com](https://education.oracle.com/pls/web_prod-plq-dad/db_pages.getpage?page_id=5001&get_params=p_exam_id:1Z0-810) [Accessed 15 May 2017].
@@ -673,3 +1181,6 @@ The output will be
 
 
 - Java2s.com. (2017). Java Lambda Introduction. [online] Available at: http://www.java2s.com/Tutorials/Java/Java_Lambda/index.htm [Accessed 19 May 2017].
+
+
+- Docs.oracle.com. (2017). java.util.stream (Java Platform SE 8 ). [online] Available at: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html [Accessed 22 May 2017].
