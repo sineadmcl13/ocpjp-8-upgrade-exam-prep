@@ -47,9 +47,9 @@
 -    [Define and use a default method of an interface and describe the inheritance rules for the default method](#define-and-use-a-default-method-of-an-interface-and-describe-the-inheritance-rules-for-the-default-method)
 
 ##### Use Java SE 8 Date/Time API
--    [Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration](#create and-manage-date-and-time-based-events-including-a-combination-of-date-and-time-in-a-single-object-by-using-localdate-localtime-localdatetime-instant-period-and-duration)
+-    [Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration](#create-and-manage-date--and-time-based-events-including-a-combination-of-date-and-time-in-a-single-object-by-using-localdate-localtime-localdatetime-instant-period-and-duration)
 -    [Work with dates and times across time zones and manage changes resulting from daylight savings, including Format date and times values](#work-with-dates-and-times-across-time-zones-and-manage-changes-resulting-from-daylight-savings-including-format-date-and-times-values)
--    Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit
+-    [Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit](#define-create-and-manage-date-and-time-based-events-using-instant-period-duration-and-temporalunit)
 
 ----
 ### Lambda Expressions
@@ -1340,10 +1340,70 @@ A `Duration` object is measured in seconds or nanoseconds and does not use date-
     System.out.println(ns);
 ```
 
+#### Work with dates and times across time zones and manage changes resulting from daylight savings, including Format date and times values
 
+In Java 8 formatting and parsing can be accomplished by using the `format()` and `parse()` methods
+
+
+```java
+    LocalDateTime datetime = LocalDateTime.now();
+    
+    String asBasicIsoDate = dateTime.format(DateTimeFormatter.BASIC_ISO_DATE);
+    
+    Straing asCustomPattern = datetime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+```
+
+We can parse a String into a date, or time, or both
+
+```java
+    LocalDate fromIsoDate = LocalDate.parse("2017-05-21");
+    
+    LocalDate fromCustomPattern = LocalDate.parse("25.05.2017",     DateTimeFormatter.ofPatter("dd.MM.yyyy"));
+```
+
+
+**Time Zones**
+
+The `LocalDate/LocalTime` classes do not contain information about time zones. If we want to work with a date/time in a certain zone we can use `ZonedDateTime` or `OffsetDateTime`
+
+You can create a `ZoneId` object by using the `ZoneId.of(...)`.
+
+```java
+    ZoneId zone = ZoneId.of("GMT+3");
+```
+
+You can create a `ZonedDateTime` object in several ways. The first is to call the `now()` method od the `ZonedDateTime` class
+
+```java
+    ZonedDateTime zdtNow = ZonedDateTime.now();
+```
+
+Another way is to use the `of(...)` method which xan create a `ZonedDateTime` object from a concrete date and time
+
+```java
+    ZoneId gmt = ZoneId.of("GMT+3");
+    
+    LocalDateTime ldt = LocalDateTime.now();
+    
+    ZonedDateTime zdtNow = ZonedDateTime.now();
+    ZonedDateTime zdtGmt = ZonedDateTime.of(ldt, gmt);
+```
+
+#### Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit
+
+- **`TemporalUnit`**
+
+The `TemporalUnit` is an interface which defines a unit of date-time, such as Days or Hours
+
+The most commonly used units are defined in `ChronoUnit` enumeration. This enum replaces integer values used in the old API to represent day, month, year, decade etc
+
+```java
+    LocalDate today = LocalDate.now();
+    LocalDate twoWeeksLater = today.plus(2, ChronoUnit.WEEKS);
+```
 
 ----
-### References
+### Bibliography 
 
 - Education.oracle.com. (2017). Upgrade Java SE 7 to Java SE 8 OCP Programmer | Oracle Certification Exam. [online] Available at: [https://education.oracle.com](https://education.oracle.com/pls/web_prod-plq-dad/db_pages.getpage?page_id=5001&get_params=p_exam_id:1Z0-810) [Accessed 15 May 2017].
 
