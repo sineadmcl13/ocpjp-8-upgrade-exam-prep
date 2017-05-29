@@ -30,7 +30,7 @@
 -    [Describe the unique characteristics of the Optional class](#describe-the-unique-characteristics-of-the-optional-class)
 -    [Perform calculations by using Java Stream methods, such as count(), max(), min(), average(), and sum()](#perform-calculations-by-using-java-stream-methods-such-as-count-max-min-average-and-sum)
 -    [Sort a collection by using lambda expressions](#sort-a-collection-by-using-lambda-expressions)
--    [Develop code that uses the Stream.collect() method and Collectors class methods, such as averagingDouble(), groupingBy(), joining(), and partitioningBy()](#develop-code-that-uses-the-streamcollect-method-and-collectors-class-methods-such-as-averagingdouble-groupingBy-joining-and-partitioningBy)
+-    [Develop code that uses the Stream.collect() method and Collectors class methods, such as averagingDouble(), groupingBy(), joining(), and partitioningBy()](#develop-code-that-uses-the-streamcollect-method-and-collectors-class-methods-such-as-averagingdouble-groupingby-joining-and-partitioningby)
 
 ##### Parallel Streams
 -    [Develop code that uses parallel streams](#develop-code-that-uses-parallel-streams)
@@ -40,15 +40,15 @@
 -    [Develop code that uses Java SE 8 collection improvements, including Collection.removeIf(), List.replaceAll(), Map.computeIfAbsent(), and Map.computeIfPresent() methods](#develop-code-that-uses-java-se-8-collection-improvements-including-collectionremoveif-listreplaceall-mapcomputeifabsent-and-mapcomputeifpresent-methods)
 -    [Develop code that uses Java SE 8 I/O improvements, including Files.find(), Files.walk(), and lines() methods](#develop-code-that-uses-java-se-8-io-improvements-including-filesfind-fileswalk-and-lines-methods)
 -    [Use flatMap() methods in the Stream API](#use-flatmap-methods-in-the-stream-api)
--    Develop code that creates a stream by using the Arrays.stream() and IntStream.range() methods
+-    [Develop code that creates a stream by using the Arrays.stream() and IntStream.range() methods](#develop-code-that-creates-a-stream-by-using-the-arraysstream-and-intstreamrange-methods)
 
 ##### Method Enhancements
--    Add static methods to interfaces
--    Define and use a default method of an interface and describe the inheritance rules for the default method
+-    [Add static methods to interfaces](#add-static-methods-to-interfaces)
+-    [Define and use a default method of an interface and describe the inheritance rules for the default method](#define-and-use-a-default-method-of-an-interface-and-describe-the-inheritance-rules-for-the-default-method)
 
 ##### Use Java SE 8 Date/Time API
--    Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration
--    Work with dates and times across time zones and manage changes resulting from daylight savings, including Format date and times values
+-    [Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration](#create and-manage-date-and-time-based-events-including-a-combination-of-date-and-time-in-a-single-object-by-using-localdate-localtime-localdatetime-instant-period-and-duration)
+-    [Work with dates and times across time zones and manage changes resulting from daylight savings, including Format date and times values](#work-with-dates-and-times-across-time-zones-and-manage-changes-resulting-from-daylight-savings-including-format-date-and-times-values)
 -    Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit
 
 ----
@@ -1164,6 +1164,180 @@ Returns a stream consisting of the results of applying the provided mapping func
     Stream<List<String>> allNames = Stream.of(names1, names2);
     
     allNames.flatMap(n -> n.stream()).forEach(System.out::println);
+```
+
+#### Develop code that creates a stream by using the Arrays.stream() and IntStream.range() methods
+
+
+- **`IntStream.range`**
+
+Retuns a sequential `IntStream` for the range of `int` elements. The `IntStream.range` **first parameter is inclusive** while the **second parameter is exclusive**
+
+
+```java
+    IntStream.range(1,3).forEach(System.out::println);
+    //prints 1,2
+```
+
+- **`IntStream.rangeClosed`**
+
+Same as `IntStream.range` except the **second paramter is inclusive**
+
+----
+
+### Method Enhancements
+
+#### Add static methods to interfaces
+
+Since Java 8, in addition to adding `default` methods to an interface, you can also add `static` methods. 
+
+```java
+    interface Doable {
+        static void doIt(){
+            System.out.println("Doing it right now");
+        }
+    }
+``` 
+
+An interface can declare `static` mthods, which are invoked without reference to a particular object
+
+```java
+    public class Task implements Doable{
+        public static void main (String[] args){
+            Doable.doIt(); ///compiles and runs ok
+            
+            Task.doIt() //fails to compile
+            
+            Doable d = new Task();
+            d.doIt(); //also fails to complile
+        }
+    }
+```
+
+
+#### Define and use a default method of an interface and describe the inheritance rules for the default method
+
+By adding the keyword `default` before the methods access modifier and adding implementation inside the interface, you do not have to provide implementation for the method in implementing classes
+
+
+```java
+    interface Doable{
+        default public void doIt(){
+            System.out.println("doing it);
+        }
+    }
+    
+    class Task implements Doable {
+        //a valid class in java 8 
+    }
+    
+```
+
+
+With default methods, the JVM now needs to search interfaces for method implementations. The order of search is as follows
+
+1. Check the class of the object for a method of the given name and signature
+2. Else, recursively from bottom up, check the class' supertypes for a method with the given name and signature
+3. Check the object's interfaces and their superinterfaces for a default method with the given name and signature
+4. If no suitable method is found, throw a `NoSuchMethodError`
+
+
+- ** Default method and multiple inheritance ambiguity problems**
+
+Since Java can implement multiple interfaces and each interface can define a default method with the same method signature, inherited methods can conflict with each other 
+
+
+```java
+    interface Shape {
+        default public void move(){
+            System.out.println("moving");
+        }
+    }
+    
+    interface Circle {
+        default public void move(){
+            System.out.println("rolling");
+        }
+    }
+    
+    
+    class Ball implements Shape, Ball{
+        //compilation fails with error:
+        //"class Ball inherits unrelated defaults for move() from
+        //types Shape and Ball
+    }
+    
+```
+
+In order to work around situations like this we need to provide an implementation for the `move()` method in the class `Ball` to override the default method in both interfaces 
+
+
+----
+### Use Java SE 8 Date/Time API
+
+#### Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration
+
+- **`Instant`**
+
+`Instant` is essentially a numeric timestamp. It is a point in time counting from the first second of January 1, 1970
+
+```java
+    Instant now = Instant.now();
+```
+
+- **`LocalDate`**
+
+a `LocalDate` represents a year-month-day and is useful for representing a date without a time. 
+
+```java
+    LocalDate currentDate = LocalDate.now();
+```
+
+- **`LocalTime`**
+
+`LocalTime` stores time without a date
+
+```java
+    LocalTime currentTime = LocalTime.now();
+```
+
+- **`LocalDateTime`**
+
+The class that handles both date and time, without a timezone. 
+
+In addition to the `now()` method that every temporal-based class provides, the `LocalDateTime` class has various `of(...)` methods create an instant of `LocalDateTime`
+
+```java
+    LocalDateTime currentDateTime = LocalDateTime.now();
+    
+    LocalDateTime sept15th = LocalDateTime.of(2017, 9, 15, 10, 15);
+    //2017-09-15 10:15
+```
+
+- **`Period`**
+
+Defines an amount of time with date-based values (years, months, days).
+
+It provides various `get` methods such as `getMonths`, `getDays` etc so that you can extract the amount of time form the period
+
+```java
+    LocalDate today = LocalDate.now();
+    LocalDate xmas = LocalDate.of(2017, Month.DECEMBER, 25);
+    Period p = Period.between(today, xmas);
+    System.out.println(p.getMonths() +"months "+p.getDays()+" days");
+```
+
+- **`Duration`**
+
+A `Duration` object is measured in seconds or nanoseconds and does not use date-based constructs such as years, months, and days.
+
+```java
+    Instant now = Instant.now();
+    Thread.sleep(1000);
+    
+    Instant delay = Instant.now();
+    long ns = Duration.between(now, delay).toNanos();
+    System.out.println(ns);
 ```
 
 
