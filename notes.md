@@ -49,7 +49,7 @@
 ##### Use Java SE 8 Date/Time API
 -    [Create and manage date- and time-based events, including a combination of date and time in a single object, by using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration](#create-and-manage-date--and-time-based-events-including-a-combination-of-date-and-time-in-a-single-object-by-using-localdate-localtime-localdatetime-instant-period-and-duration)
 -    [Work with dates and times across time zones and manage changes resulting from daylight savings, including Format date and times values](#work-with-dates-and-times-across-time-zones-and-manage-changes-resulting-from-daylight-savings-including-format-date-and-times-values)
--    [Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit](#define-create-and-manage-date-and-time-based-events-using-instant-period-duration-and-temporalunit)
+-    [Define, create, and manage date- and time-based events using Instant, Period, Duration, and TemporalUnit](#define-create-and-manage-date--and-time-based-events-using-instant-period-duration-and-temporalunit)
 
 ----
 ### Lambda Expressions
@@ -91,10 +91,10 @@ A local inner class is a nested class defined within a method
 An anonymous inner class is a local inner class that is declared and instantiated all in one statement using the new keyword
 
 - They are required to extend an existing class or implement an existing interface
-- Remeber that if assigned to a local variable it must end with semicolons, just like other Java statements
+- Remember that if assigned to a local variable it must end with semicolons, just like other Java statements
 - You can't implement both an interface and extend a class unless it is java.lang.Object
 
-[Code example found here](code-examples/lambda-expressions/AnonmousInnerClassExample.java)
+[Code example found here](code-examples/lambda-expressions/AnonymousInnerClassExample.java)
 
 ##### Static Nested Classes
 
@@ -174,7 +174,7 @@ In Java 8, we would write this code example as a lambda expression, as shown in 
 
 #### Describe type inference and target typing
 
-In the examples above we have not declared the type of the variable being passed. THe Java compiler is inferring the type of the variable from its context.
+In the examples above we have not declared the type of the variable being passed. The Java compiler is inferring the type of the variable from its context.
 
 It means that you do not need to explicitly write out the type when it is obvious. 
 In some situations where the Java compiler cannot infer types, you MUST explicitly specify values for type variables with type witnesses.
@@ -378,6 +378,16 @@ There are four formats for method references:
 - Instance methods on an instance to be determined at runtime 
 - Constructors
 
+A method reference can't be used for any method. **They can only be used to replace a single-method lambda expression.**
+
+
+In other words:
+
+Instead of using **AN ANONYMOUS CLASS**
+
+you can use **A LAMBDA EXPRESSION**
+
+And if this just calls one method, you can use **A METHOD REFERENCE**
 
 ###### Static methods
 A non-constructor method reference consists of a qualifier, followed by the :: delimiter, followed by an identifier. 
@@ -450,7 +460,7 @@ Refactoring Example
 There are multiple way of looping through a collection. You could use an iterator, the enhanced for loop or a number of other approaches. With Java 8 you can now use a lambda.
 
 ```java
-    List<String> names = Arrays.asList("Mike, "Dave", "John");
+    List<String> names = Arrays.asList("Mike", "Dave", "John");
     for(String name : names){
         System.out.println(name);
     }
@@ -462,9 +472,9 @@ With lambdas you can use the forEach() method
 ```
 
 #### Describe the Stream interface and pipelines
-A stream is a sequence of data. A stream pipelins is the operations that run on a stream to produce a result
+A stream is a sequence of data. A stream pipeline is the operation that runs on a stream to produce a result
 
-`Stream` does not store data, it operates on the source data structure (Collection or array) and produces pipelined data that we can use and perform specific operations. For example, we can create a Stream from a `java.util.List` and filter it based on a condition as shown below.
+`Stream` does not store data, it operates on the source data structure (Collection or array) and produces pipelined data that we can use to perform specific operations. For example, we can create a Stream from a `java.util.List` and filter it based on a condition as shown below.
 
 ```java
     List<String> names = Arrays.asList("Mike", "John", "Dave", "Peter");
@@ -488,7 +498,7 @@ Intermediate operations are never the final result producing operations. Commonl
 ```
 
 ```java
-    stream.filter(s -> s.equals("Hello World));
+    stream.filter(s -> s.equals("Hello World"));
 ```
 
 - **Stream.map()**
@@ -512,11 +522,11 @@ in other words, for each item, create a new object based on that item. example b
     System.out.println(l);
 ```
 
-- **Stream.peak()**
+- **Stream.peek()**
 
-Returns a `Stream` itself after applying the action passed as a `consumer` 
+Returns a `Stream` itself after applying the action passed as a `Consumer` 
 ```java
-    Stream<T> peak(Consumer<? super T> action)
+    Stream<T> peek(Consumer<? super T> action)
 ```
 
 ```java
@@ -534,7 +544,7 @@ Returns a `Stream` itself after applying the action passed as a `consumer`
 Stream API operations that returns a result or produce a side effect. Once the terminal method is called on a stream, it consumes the stream and after that we can not use it
 
 - **Stream.collect()**
-Used to transform the elemnts of the stream into a different kind of result
+Used to transform the elements of the stream into a different kind of result
 
 ```java
     <R, A> R collect(Collector<? super T, A, R> collector);
@@ -557,9 +567,9 @@ Used to transform the elemnts of the stream into a different kind of result
     Optional<T> max(Comparator<? super T> comparator);
 ```
 
-`Stream.min()` and `Stream.max()` both return an `Optional` instance with has a `get()` method, which you can use to obtain the value. 
+`Stream.min()` and `Stream.max()` both return an `Optional` instance which has a `get()` method, which you can use to obtain the value. 
 
-Both methods also take a `Comparator` as a parameter. THe `Comparator.comparing()` method creates a `Comparator` based on the lambda expression passed to it. 
+Both methods also take a `Comparator` as a parameter. The `Comparator.comparing()` method creates a `Comparator` based on the lambda expression passed to it. 
 
 
 ```java
@@ -582,7 +592,7 @@ The `findAny` method immediatley stops pipeline execution, so no further element
 
 - **Stream.findFirst()**
 
-Provides the firstm elements from the stream. Also returns an `Optional`
+Provides the first element from the stream. Also returns an `Optional`
 
 ```java
     Optional<T> findFirst();
@@ -630,11 +640,11 @@ The `Stream.filter()` method is an intermediate operation. You can filter a `Str
 
 #### Identify the operations, on stream, that are lazy
 
-Streams have two types of methods: **intermediate** and **terminal**, which work together. They can be calledd "lazy" due to the way we chain multiple intermediate operations followed by a terminal operation. 
+Streams have two types of methods: **intermediate** and **terminal**, which work together. They can be called "lazy" due to the way we chain multiple intermediate operations followed by a terminal operation. 
 
-Calls to intermediate methods e.g `filter()` return immediatley and the lambda expressions provided to them are not evaluated right away. Their behaviour is cached for later execution.
+Calls to intermediate methods e.g `filter()` return immediately and the lambda expressions provided to them are not evaluated right away. Their behaviour is cached for later execution.
 
-The cached behaviour if intermediate operations is run when one of the terminal operations, like `findFirst()` is called. Not all the cached code is executed and computation will complete as soon as the desired result is found
+The cached behaviour of intermediate operations is run when one of the terminal operations, like `findFirst()` is called. Not all the cached code is executed and computation will complete as soon as the desired result is found
 
 ```java
     List<String> names = Arrays.asList("Peter", "Paul", "Simon", "Mike", "Dave");
@@ -1418,3 +1428,6 @@ The most commonly used units are defined in `ChronoUnit` enumeration. This enum 
 
 
 - Docs.oracle.com. (2017). java.util.stream (Java Platform SE 8 ). [online] Available at: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html [Accessed 22 May 2017].
+
+
+- Codementor.io. (2017). Java 8 Method Reference: How to Use it | Codementor. [online] Available at: https://www.codementor.io/eh3rrera/using-java-8-method-reference-du10866vx [Accessed 3 Jun. 2017].
