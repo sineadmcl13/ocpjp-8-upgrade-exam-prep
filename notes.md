@@ -468,6 +468,10 @@ There are multiple way of looping through a collection. You could use an iterato
 
 With lambdas you can use the forEach() method
 ```java
+    default void forEach(Consumer<? super T> action)
+```
+
+```java
     names.forEach(n -> System.out.println(n));
 ```
 
@@ -714,7 +718,7 @@ The most common methods used to convert a stream to a primitive specialised vers
 
 - **findFirst()**
 
-Returns the first element of the stream unless the stream is empty. If the stream is empty, it retursn an empty `Optional`
+Returns the first element of the stream unless the stream is empty. If the stream is empty, it returns an empty `Optional`
 
 ```java
     Option<T> findFirst();
@@ -730,7 +734,7 @@ Returns the first element of the stream unless the stream is empty. If the strea
 
 - **findAny()**
 
-Returns an arbritary element of the stream unless the stream is empty. If the stream is empty, it retursn an empty `Optional`
+Returns an arbritary element of the stream unless the stream is empty. If the stream is empty, it returns an empty `Optional`
 
 ```java
     Optional<T> findAny();
@@ -824,7 +828,7 @@ There are several ways to create optional objects.
 
 **Unwrapping an `Optional`**
 
-- **`Optional.get()` **
+- **`Optional.get()`**
     
     It returns the wrapped value if present but throws a `NoSuchElementException` otherwise
     
@@ -860,7 +864,7 @@ Determines to number of elements in a finite stream.
     System.out.println(s.count());
 ```
 
-- **`min()` and `max()` **
+- **`min()` and `max()`**
 
 Allows you to pass a custom comparator and find the smallest and largest value of a finite stream according to that sort order
 
@@ -1008,6 +1012,20 @@ As `partitioingBy(..)` takes a `Predicate` there are only possible groups; true 
     //{false=[James], true=[John, Joe]}
 ```
 
+- **`Collectors.toMap(...)`**
+
+```java
+    Collectors.toMap(Function, Function)
+    Collectors.toMap(Function, Function, BinaryOperator)
+```
+
+Java 8 provides Collectors.toMap() that is useful to convert `List` to `Map`. We need to pass a mapping `Function` for both the key and value. 
+
+The Collector created by Collectors.toMap throws `java.lang.IllegalStateException` if an attempt is made to store a key that already exists in the Map
+
+
+If you want to collect items in a Map and if you expect duplicate entries in the source, you should use `Collectors.toMap(Function, Function, BinaryOperator)` method.
+
 ----
 
 ### Parallel Streams
@@ -1137,7 +1155,7 @@ Returns a `Stream` that is lazily populated with `Path` by searching for files i
 
 - **`Files.walk(...)`**
 
-Returns a `Stream` that is lazily populated with `Path` by walkign the file tree rooted at a given starting file. The file tree is traversed depth-first, the elements in the stream are `Path` objects that are obtained as if by resolving the relative path against start.
+Returns a `Stream` that is lazily populated with `Path` by walking the file tree rooted at a given starting file. The file tree is traversed depth-first, the elements in the stream are `Path` objects that are obtained as if by resolving the relative path against start.
 
 ```java
     public static Stream<Path> walk(Path start,
@@ -1145,6 +1163,12 @@ Returns a `Stream` that is lazily populated with `Path` by walkign the file tree
                                     FileVisitOption... options)
                                     throws IOException
 ```
+
+Points to note about the `Files.walk(...)` method
+1. The first value that is returned is the starting directory itself
+2. It walks the directory is a depth first manner, meaning it process the children of a directory before moving to the sibling directory
+3. The order of processing the siblings is not defined, so the order is not guaranteed
+
 
 [Code example found here](code-examples/lambda-cookbook/FilesWalkExample.java)
 
@@ -1156,6 +1180,9 @@ Reads all the lines from a file as a `Stream`. Bytes from the file are decoded i
 ```java
     public static Stream<String> lines(Path path) throws IOException
 ```
+
+The stream is lazily populated, which mean it doesn't read the whole file upfront. It reads the files as you consume the elements of the stream.
+
 
 [Code example found here](code-examples/lambda-cookbook/FileLinesExample.java)
 
@@ -1252,7 +1279,7 @@ With default methods, the JVM now needs to search interfaces for method implemen
 4. If no suitable method is found, throw a `NoSuchMethodError`
 
 
-- ** Default method and multiple inheritance ambiguity problems**
+- **Default method and multiple inheritance ambiguity problems**
 
 Since Java can implement multiple interfaces and each interface can define a default method with the same method signature, inherited methods can conflict with each other 
 
@@ -1273,13 +1300,17 @@ Since Java can implement multiple interfaces and each interface can define a def
     
     class Ball implements Shape, Ball{
         //compilation fails with error:
-        //"class Ball inherits unrelated defaults for move() from
+        //class Ball inherits unrelated defaults for move() from
         //types Shape and Ball
     }
     
 ```
 
 In order to work around situations like this we need to provide an implementation for the `move()` method in the class `Ball` to override the default method in both interfaces 
+
+
+- **You cannot override a default method of an interface with a static method in a sub-interface or even in a class that implements that interface.** Although the reverse is possible. You can override a static method with a default method
+
 
 
 ----
@@ -1388,7 +1419,7 @@ You can create a `ZonedDateTime` object in several ways. The first is to call th
     ZonedDateTime zdtNow = ZonedDateTime.now();
 ```
 
-Another way is to use the `of(...)` method which xan create a `ZonedDateTime` object from a concrete date and time
+Another way is to use the `of(...)` method which can create a `ZonedDateTime` object from a concrete date and time
 
 ```java
     ZoneId gmt = ZoneId.of("GMT+3");
@@ -1411,6 +1442,25 @@ The most commonly used units are defined in `ChronoUnit` enumeration. This enum 
     LocalDate today = LocalDate.now();
     LocalDate twoWeeksLater = today.plus(2, ChronoUnit.WEEKS);
 ```
+
+
+- toString methods of `Duration` and `Period`
+
+`Duration` strings start with `PT` (because duration is "time based" i.e. hours/minutes/seconds)) and `Period` strings start with just `P` (because period does not include time. It contains only years, months, and days).
+
+
+- `Duration` toString
+
+The format of the returned string will be in PTnHnMnS, where n is the relevant hours, minutes or seconds part of the duration
+
+If a section has a zero value, it is omitted. 
+
+- `Period` toString
+
+The format of the returned string will be in PnYnMnD, where n is the relevant years, months or days part of the duration
+
+The output will be in the ISO-8601 period formt. A zero period will be represented as zero days, 'P0D'
+
 
 ----
 ### Bibliography 
