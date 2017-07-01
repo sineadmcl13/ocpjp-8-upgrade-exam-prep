@@ -1326,6 +1326,8 @@ In order to work around situations like this we need to provide an implementatio
     Instant now = Instant.now();
 ```
 
+`Instant` is immutable and thread-safe
+
 - **`LocalDate`**
 
 a `LocalDate` represents a year-month-day and is useful for representing a date without a time. 
